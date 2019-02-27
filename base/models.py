@@ -4,6 +4,15 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
+class Theme(models.Model):
+    title = models.CharField(max_length=255, unique=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='themes', on_delete=models.CASCADE)
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='following_themes')
+
+    def __str__(self):
+        return self.title
+
+
 class Attachment(models.Model):
     file = models.FileField()
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='attachments', on_delete=models.CASCADE)
@@ -20,7 +29,8 @@ class Question(models.Model):
     text = models.CharField('question text', max_length=255)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='questions', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    attachmetns = GenericRelation(Attachment)
+    themes = models.ManyToManyField(Theme)
+    attachments = GenericRelation(Attachment)
 
     class Meta:
         ordering = ('-created_at', )
@@ -41,16 +51,6 @@ class Answer(models.Model):
 
     def __str__(self):
         return f'Question {self.question_id}: {self.text}'
-
-
-class Theme(models.Model):
-    title = models.CharField(max_length=255, unique=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='themes', on_delete=models.CASCADE)
-    questions = models.ManyToManyField(Question)
-    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='following_themes')
-
-    def __str__(self):
-        return self.title
 
 
 class Like(models.Model):
