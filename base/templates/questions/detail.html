@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h2>{{ question.text|capfirst }}</h2>
+    {% if question.attachments.exists %}
+        {% for attachment in question.attachments.all %}
+            <img src="{{ attachment.file.url }}" style="max-width: 300px">
+        {% endfor %}
+    {% endif %}
+    <h2>Answers:</h2>
+    {% for answer in question.answers.all %}
+        <ul>
+            <li>
+                <p>{{ answer.text }}</p>
+                <p>Answered by: {{ answer.owner }}</p>
+                <p>Created at: {{ answer.created_at }}</p>
+            </li>
+        </ul>
+    {% endfor %}
+{% endblock %}
